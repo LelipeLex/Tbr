@@ -45,7 +45,7 @@ def _load_robot_actions() -> Dict[str, Callable[[], Any]]:
     actions: Dict[str, Callable[[], Any]] = {}
 
     try:
-        import main as robot_main
+        import code.main as robot_main
     except Exception:
         return actions
 

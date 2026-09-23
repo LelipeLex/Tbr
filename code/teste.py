@@ -6,4 +6,10 @@ from pybricks.tools import wait, StopWatch
 
 hub = PrimeHub()
 
-print(hub.battery.voltage())
+def RunTeste():
+    if hub.imu.ready():
+        print(hub.imu.heading())
+        from main import setMotors, Turn
+        setMotors()
+        Turn(90)
+        print(hub.imu.heading())

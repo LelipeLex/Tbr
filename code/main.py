@@ -327,8 +327,10 @@ def get_program():
 
 motors = setMotors()
 
+from teste import RunTeste
+RunTeste()
 
-if hub.imu.ready():
-    while True:
-        get_program()
-        wait(10)
+#if hub.imu.ready():
+#    while True:
+#        get_program()
+#        wait(10)
