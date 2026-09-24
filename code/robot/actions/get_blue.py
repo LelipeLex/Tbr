@@ -1,0 +1,13 @@
+def get_blue(motors, right_attachment, turn):
+    motors.straight(60)
+    turn(86)
+    motors.straight(123)
+    right_attachment.run_time(1000, 3500)
+    turn(-86)
+    motors.straight(570)
+    turn(88)
+    motors.straight(53)
+    right_attachment.run_time(-1000, 2500)
+    motors.straight(-47)
+    turn(90)
+    motors.straight(570)
