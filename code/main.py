@@ -47,7 +47,6 @@ def penalty1():
 def get_blue():
     motors.straight(60)
     turn(86)
-    motors.straight(123)
     right_attachment.run_time(1000, 3500)
     turn(-86)
     motors.straight(570)
