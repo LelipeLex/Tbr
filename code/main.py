@@ -1,6 +1,6 @@
 from pybricks.hubs import PrimeHub
-from pybricks.pupdevices import Motor
-from pybricks.parameters import Button, Direction, Port
+from pybricks.pupdevices import Motor, ColorSensor
+from pybricks.parameters import Button, Direction, Port, Color
 from pybricks.robotics import DriveBase
 from pybricks.tools import wait
 
@@ -8,6 +8,8 @@ from pybricks.tools import wait
 print("Iniciando programa")
 hub = PrimeHub()
 program = 1
+
+sensor = ColorSensor(Port.C)
 
 
 def set_motors():
@@ -18,21 +20,33 @@ def set_motors():
     return motors
 
 
+def normalize_angle(angle):
+    while angle > 180:
+        angle -= 360
+    while angle < -180:
+        angle += 360
+    return angle
+
+
 def turn(degrees):
-    target = hub.imu.heading() + degrees
-    target += 1 if degrees > 0 else -1
+    target = normalize_angle(hub.imu.heading() + degrees)
 
     while True:
-        error = target - hub.imu.heading()
-        if abs(error) < 1:
+        error = normalize_angle(target - hub.imu.heading())
+        if abs(error) < 0.8:
+            motors.stop()
             break
 
-        speed = max(-300, min(300, error * 12))
-        if 0 < speed < 80:
-            speed = 80
-        elif -80 < speed < 0:
-            speed = -80
-        motors.drive(0, speed)
+        if abs(error) < 18:
+            speed = max(-80, min(80, error * 4.5))
+        else:
+            speed = max(-180, min(180, error * 2.8))
+
+        if abs(speed) < 20 and abs(error) > 0:
+            speed = 20 if error > 0 else -20
+
+        motors.drive(0, int(speed))
+        wait(10)
 
     motors.stop()
 
@@ -46,11 +60,12 @@ def penalty1():
 
 def get_blue():
     motors.straight(60)
-    turn(86)
+    turn(90)
+    motors.straight(22.5)
     right_attachment.run_time(1000, 3500)
-    turn(-86)
+    turn(-90)
     motors.straight(570)
-    turn(88)
+    turn(90)
     motors.straight(53)
     right_attachment.run_time(-1000, 2500)
     motors.straight(-47)
@@ -60,13 +75,13 @@ def get_blue():
 
 def get_green():
     motors.straight(165)
-    turn(84)
+    turn(90)
     motors.straight(220)
     right_attachment.run_time(1000, 4000)
     motors.straight(-160)
-    turn(-71)
+    turn(-90)
     motors.straight(405)
-    turn(80)
+    turn(90)
     motors.straight(30)
     right_attachment.run_time(-1000, 2500)
     motors.straight(-30)
@@ -76,7 +91,7 @@ def get_green():
 
 def get_red():
     motors.straight(250)
-    turn(82)
+    turn(90)
     motors.straight(115)
     right_attachment.run_time(1000, 2500)
     motors.straight(175)
@@ -84,7 +99,7 @@ def get_red():
     motors.straight(25)
     right_attachment.run_time(-1000, 2500)
     motors.straight(-25)
-    turn(70)
+    turn(90)
     motors.straight(-279)
 
 
@@ -99,7 +114,7 @@ def put_green():
     motors.turn(74)
     motors.straight(50)
     motors.straight(85)
-    turn(2)
+    turn(0)
     motors.straight(30)
 
 
@@ -111,7 +126,7 @@ def get_high_red():
     motors.straight(30)
     right_attachment.run_time(1000, 2500)
     motors.straight(-70)
-    turn(-45)
+    turn(-90)
     motors.straight(40)
     right_attachment.run_time(-1000, 2500)
 
@@ -122,13 +137,13 @@ def get_high_blue():
     motors.straight(310)
     turn(90)
     motors.straight(520)
-    turn(-105)
+    turn(-90)
     motors.straight(43)
     right_attachment.run_time(1000, 2500)
     motors.straight(-80)
-    turn(105)
+    turn(90)
     motors.straight(-385)
-    turn(-45)
+    turn(-90)
     motors.straight(-400)
     right_attachment.run_time(-1000, 2500)
 
@@ -159,7 +174,7 @@ def choose_program():
     hub.display.number(program)
     pressed = hub.buttons.pressed()
 
-    if Button.LEFT in pressed and Button.RIGHT in pressed:
+    if sensor.color() == Color.BLUE:
         programs[program - 1]()
     elif Button.LEFT in pressed and Button.RIGHT not in pressed:
         wait(250)
@@ -180,4 +195,3 @@ print("Hardware pronto")
 
 while True:
     choose_program()
-    wait(10)
