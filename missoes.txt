@@ -1,0 +1,10 @@
+Lista de missões e seus números:
+
+1. get_blue
+2. get_green
+3. get_red
+4. car
+5. get_high_red
+6. get_high_blue
+7. penalty1
+8. clean
