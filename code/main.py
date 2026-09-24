@@ -30,23 +30,32 @@ def normalize_angle(angle):
 
 def turn(degrees):
     target = normalize_angle(hub.imu.heading() + degrees)
+    integral = 0
+    previous_error = 0
 
     while True:
-        error = normalize_angle(target - hub.imu.heading())
-        if abs(error) < 0.8:
+        current_heading = hub.imu.heading()
+        error = normalize_angle(target - current_heading)
+        integral += error
+        derivative = error - previous_error
+        previous_error = error
+
+        if abs(error) < 0.9:
             motors.stop()
             break
 
-        if abs(error) < 18:
-            speed = max(-80, min(80, error * 4.5))
-        else:
-            speed = max(-180, min(180, error * 2.8))
+        kp = 3.2
+        ki = 0.02
+        kd = 0.8
 
-        if abs(speed) < 20 and abs(error) > 0:
-            speed = 20 if error > 0 else -20
+        turn_rate = (kp * error) + (ki * integral) + (kd * derivative)
+        speed = max(-180, min(180, turn_rate))
+
+        if abs(speed) < 18 and abs(error) > 0:
+            speed = 18 if error > 0 else -18
 
         motors.drive(0, int(speed))
-        wait(10)
+        wait(12)
 
     motors.stop()
 
@@ -76,7 +85,7 @@ def get_blue():
 def get_green():
     motors.straight(165)
     turn(90)
-    motors.straight(220)
+    motors.straight(180)
     right_attachment.run_time(1000, 4000)
     motors.straight(-160)
     turn(-90)
@@ -85,7 +94,7 @@ def get_green():
     motors.straight(30)
     right_attachment.run_time(-1000, 2500)
     motors.straight(-30)
-    turn(-90)
+    turn(-84)
     motors.straight(-500)
 
 
@@ -195,3 +204,4 @@ print("Hardware pronto")
 
 while True:
     choose_program()
+    wait(10)
