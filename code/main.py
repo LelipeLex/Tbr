@@ -68,9 +68,9 @@ def penalty1():
 
 
 def get_blue():
-    motors.straight(60)
+    motors.straight(65)
     turn(90)
-    motors.straight(22.5)
+    motors.straight(25)
     right_attachment.run_time(1000, 3500)
     turn(-90)
     motors.straight(570)
@@ -100,10 +100,10 @@ def get_green():
 
 def get_red():
     motors.straight(250)
-    turn(90)
-    motors.straight(115)
+    turn(88)
+    motors.straight(80)
     right_attachment.run_time(1000, 2500)
-    motors.straight(175)
+    motors.straight(110)
     turn(-90)
     motors.straight(25)
     right_attachment.run_time(-1000, 2500)
@@ -156,6 +156,11 @@ def get_high_blue():
     motors.straight(-400)
     right_attachment.run_time(-1000, 2500)
 
+def drop_ramp():
+    motors.straight(1390)
+    turn(-30)
+    motors.straight(280)
+    turn(-285)
 
 def car():
     motors.straight(840)
@@ -174,6 +179,7 @@ def choose_program():
         get_green,
         get_red,
         car,
+        drop_ramp,
         get_high_red,
         get_high_blue,
         penalty1,
