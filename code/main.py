@@ -33,6 +33,8 @@ def turn(degrees):
     integral = 0
     previous_error = 0
 
+    starting_heading = hub.imu.heading()
+
     while True:
         current_heading = hub.imu.heading()
         error = normalize_angle(target - current_heading)
@@ -40,24 +42,29 @@ def turn(degrees):
         derivative = error - previous_error
         previous_error = error
 
-        if abs(error) < 0.9:
+        if abs(error) < 0.1:
             motors.stop()
             break
 
-        kp = 3.2
-        ki = 0.02
+        kp = 2.4
+        ki = 0.0
         kd = 0.8
 
         turn_rate = (kp * error) + (ki * integral) + (kd * derivative)
         speed = max(-180, min(180, turn_rate))
 
-        if abs(speed) < 18 and abs(error) > 0:
-            speed = 18 if error > 0 else -18
+        if abs(speed) < 4 and abs(error) > 0.2:
+            speed = 4 if error > 0 else -4
 
         motors.drive(0, int(speed))
         wait(12)
 
     motors.stop()
+
+    final_heading = hub.imu.heading()
+    actual_turn = normalize_angle(final_heading - starting_heading)
+    turn_error = actual_turn - degrees
+    print("Giro:", actual_turn, "graus; erro:", turn_error, "graus")
 
 
 def penalty1():
@@ -72,23 +79,24 @@ def get_blue():
     turn(90)
     motors.straight(25)
     right_attachment.run_time(1000, 3500)
-    turn(-90)
+    turn(-93)
     motors.straight(570)
     turn(90)
-    motors.straight(53)
+    motors.straight(65)
     right_attachment.run_time(-1000, 2500)
-    motors.straight(-47)
+    motors.straight(-53)
     turn(90)
     motors.straight(570)
+    motors.settings(straight_acceleration=900)
 
 
 def get_green():
     motors.straight(165)
     turn(90)
-    motors.straight(180)
+    motors.straight(130)
     right_attachment.run_time(1000, 4000)
     motors.straight(-160)
-    turn(-90)
+    turn(-88)
     motors.straight(405)
     turn(90)
     motors.straight(30)
@@ -105,10 +113,10 @@ def get_red():
     right_attachment.run_time(1000, 2500)
     motors.straight(110)
     turn(-90)
-    motors.straight(25)
+    motors.straight(40)
     right_attachment.run_time(-1000, 2500)
     motors.straight(-25)
-    turn(90)
+    turn(50)
     motors.straight(-279)
 
 
